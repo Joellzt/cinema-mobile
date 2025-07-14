@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "mobile_movie_app",
+    "name": "Movie Cards",
     "slug": "mobile_movie_app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icons/logo.png",
+    "icon": "./assets/icons/logoapp.png",
     "scheme": "mobilemovieapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/icons/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.joelnet.mobile_movie_app"
     },
     "web": {
       "bundler": "metro",

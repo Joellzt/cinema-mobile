@@ -76,12 +76,12 @@ const ProfileScreen = () => {
 
   const handleEmailAuth = async () => {
     if (!formData.email || !formData.password) {
-      Alert.alert('Error', 'Por favor completa todos los campos');
+      Alert.alert('Nota', 'Por favor completa todos los campos');
       return;
     }
 
     if (!isLogin && !formData.name) {
-      Alert.alert('Error', 'Por favor ingresa tu nombre');
+      Alert.alert('Nota', 'Por favor ingresa tu nombre');
       return;
     }
 
@@ -98,7 +98,7 @@ const ProfileScreen = () => {
         setUser(currentUser);
       }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Ocurrió un error');
+      Alert.alert('Error', 'Introduzca una contraseña de mínimo 8 caracteres');
     } finally {
       setAuthLoading(false);
     }

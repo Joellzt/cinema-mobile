@@ -110,11 +110,9 @@ const MovieDetailsScreen = () => {
       if (isSaved) {
         await unsaveMovie(user.$id, id);
         setIsSaved(false);
-        Alert.alert('Éxito', 'Película removida de guardados');
       } else if (movie) {
         await saveMovie(user.$id, id, movie);
         setIsSaved(true);
-        Alert.alert('Éxito', 'Película guardada correctamente');
       }
     } catch (error) {
       console.error('Error:', error);

@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useState, useEffect, useCallback } from 'react';
+import { View, Text, Image, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Account, Client } from 'appwrite';
 import { getSavedMovies } from '@/services/movieService';
 import { icons } from '@/constants/icons';
 import { images } from '@/constants/images';
-
 
 const client = new Client()
   .setEndpoint('https://cloud.appwrite.io/v1') 
@@ -17,25 +16,60 @@ const SavedMovies = () => {
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const account = new Account(client);
-        const currentUser = await account.get();
-        setUser(currentUser);
+  const checkAuth = useCallback(async () => {
+    try {
+      const account = new Account(client);
+      const currentUser = await account.get();
+      setUser(currentUser);
+      return currentUser;
+    } catch (error) {
+      setUser(null);
+      return null;
+    }
+  }, []);
 
-        if (currentUser) {
-          const savedMovies = await getSavedMovies(currentUser.$id);
-          setMovies(savedMovies);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const currentUser = await checkAuth();
+
+      if (currentUser) {
+        const savedMovies = await getSavedMovies(currentUser.$id);
+        setMovies(savedMovies);
+      } else {
+        setMovies([]);
       }
-    };
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'No se pudieron cargar las películas guardadas');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
+  useEffect(() => {
     fetchData();
+  }, [fetchData]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [fetchData])
+  );
+
+  const handlePressMovie = useCallback(async (movieId: string) => {
+    const currentUser = await checkAuth();
+    if (!currentUser) {
+      Alert.alert(
+        'Sesión requerida',
+        'Debes iniciar sesión para ver esta película',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+        ]
+      );
+      return;
+    }
+    router.push(`/movie/${movieId}`);
   }, []);
 
   if (loading) {
@@ -49,7 +83,7 @@ const SavedMovies = () => {
   if (!user) {
     return (
       <View className="flex-1 bg-primary justify-center items-center px-4">
-        <Text className="text-white text-lg text-center">
+        <Text className="text-white text-lg text-center mb-4">
           Inicia sesión para ver tus películas guardadas
         </Text>
       </View>
@@ -76,7 +110,7 @@ const SavedMovies = () => {
           renderItem={({ item }) => (
             <TouchableOpacity 
               className="flex-row items-center mb-4 bg-dark-100 p-3 rounded-lg"
-              onPress={() => router.push(`/movie/${item.id}`)}
+              onPress={() => handlePressMovie(item.id)}
             >
               <Image
                 source={{ uri: `https://image.tmdb.org/t/p/w200${item.poster_path}` }}
