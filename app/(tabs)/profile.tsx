@@ -98,7 +98,7 @@ const ProfileScreen = () => {
         setUser(currentUser);
       }
     } catch (error: any) {
-      Alert.alert('Error', 'Introduzca una contraseña de mínimo 8 caracteres');
+      Alert.alert('Error', 'Introduzca un email y contraseña validos');
     } finally {
       setAuthLoading(false);
     }
